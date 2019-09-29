@@ -56,9 +56,14 @@ public class MainActivity extends AppCompatActivity {
         btn_encoder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lameMp3.encode();
-                LogUtils.i(className,"编码完成");
-                lameMp3.destroy();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        lameMp3.encode();
+                        LogUtils.i(className,"编码完成");
+                        lameMp3.destroy();
+                    }
+                }).start();
             }
         });
     }
