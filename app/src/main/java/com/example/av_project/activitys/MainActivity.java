@@ -1,38 +1,36 @@
 package com.example.av_project.activitys;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.media.AudioFormat;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import com.example.av_project.Entity.LameMp3;
 import com.example.av_project.R;
-import com.example.av_project.Utils.LogUtils;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    Button btn_encoder;
-    LameMp3 lameMp3;
-    int sampleRate = 44100;
-    int channels = AudioFormat.CHANNEL_IN_MONO;
-    public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-    int bitRate = 128;
+//    Button btn_encoder;
+//    LameMp3 lameMp3;
+//    int sampleRate = 44100;
+//    int channels = AudioFormat.CHANNEL_IN_MONO;
+//    public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+//    int bitRate = 128;
     private String className = MainActivity.class.getSimpleName();
+    ListView listView;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initPermission();
-        lameMp3 = new LameMp3();
+        /*lameMp3 = new LameMp3();
         System.out.println(lameMp3.getVersion());
         File file = new File(Environment.getExternalStorageDirectory()+"/1.pcm");
         if(!file.exists()){
@@ -64,6 +62,24 @@ public class MainActivity extends AppCompatActivity {
                         lameMp3.destroy();
                     }
                 }).start();
+            }
+        });*/
+        listView = findViewById(R.id.list_for_items);
+        final List<String> res = new ArrayList<>();
+        res.add("AudioTrack");
+        res.add("OpenSLES");
+        listView.setAdapter(new MyAdapter(this,res,R.layout.activity_main_list_item_layout));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (res.get(position)){
+                    case "AudioTrack":
+                        startActivity(new Intent(MainActivity.this,AudioTrackActivity.class));
+                        break;
+                    case "OpenSLES":
+                        startActivity(new Intent(MainActivity.this,OpenSLESActivity.class));
+                        break;
+                }
             }
         });
     }
@@ -98,6 +114,62 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+        }
+    }
+    static class ViewHolder{
+        private TextView textView;
+    }
+
+    private class MyAdapter extends BaseAdapter{
+        private Context context;
+        private List<String> res;
+        private int layoutId;
+
+        public MyAdapter(Context context,List<String> res,int layoutId){
+            this.context = context;
+            this.res = res;
+            this.layoutId = layoutId;
+        }
+
+        @Override
+        public int getCount() {
+            return res.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return res.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return super.getItemViewType(position);
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return super.getViewTypeCount();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            if(convertView == null){
+                viewHolder = new ViewHolder();
+                convertView = LayoutInflater.from(context).inflate(layoutId,null);
+                viewHolder.textView = convertView.findViewById(R.id.item_name);
+                viewHolder.textView.setText(res.get(position));
+                convertView.setTag(viewHolder);
+            }else{
+                viewHolder = (ViewHolder) convertView.getTag();
+                viewHolder.textView.setText(res.get(position));
+            }
+            return convertView;
         }
     }
 }
