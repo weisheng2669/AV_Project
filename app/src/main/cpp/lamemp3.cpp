@@ -2,6 +2,8 @@
 #include <string>
 #include "libmp3lame/lame.h"
 #include "MP3Encoder.h"
+#include <SLES/OpenSLES.h>
+#include <SLES/OpenSLES_Android.h>
 
 MP3Encoder *encoder;
 

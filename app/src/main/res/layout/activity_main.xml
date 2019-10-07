@@ -8,15 +8,9 @@
     android:orientation="vertical"
     tools:context=".activitys.MainActivity">
 
-    <Button
-        android:text="编码"
-        android:id="@+id/encode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <ProgressBar
-        android:id="@+id/encode_progress"
-        android:max="100"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+   <ListView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:id="@+id/list_for_items"
+       />
 </LinearLayout>
