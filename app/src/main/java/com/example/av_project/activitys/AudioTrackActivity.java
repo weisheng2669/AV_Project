@@ -14,17 +14,15 @@ import android.widget.Button;
 
 
 import com.example.av_project.R;
-import com.example.av_project.Utils.LogUtils;
+import com.example.av_project.utils.LogUtils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.TimerTask;
 
 public class AudioTrackActivity extends AppCompatActivity {
     private static final String TAG = "AudioTrackActivity";
@@ -37,8 +35,6 @@ public class AudioTrackActivity extends AppCompatActivity {
     int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     int bufferSizeInBytes = AudioTrack.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat);
 
-    volatile boolean flag_modeStatic_playThread = false;
-    volatile boolean flag_modeStream_playThread = false;
 
     int static_mode = AudioTrack.MODE_STATIC;
     int noStaticMode = AudioTrack.MODE_STREAM;

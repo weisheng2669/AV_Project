@@ -10,10 +10,9 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.av_project.R;
-import com.example.av_project.Utils.LogUtils;
+import com.example.av_project.utils.LogUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;

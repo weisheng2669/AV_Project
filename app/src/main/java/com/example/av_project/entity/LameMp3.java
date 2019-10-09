@@ -1,4 +1,4 @@
-package com.example.av_project.Entity;
+package com.example.av_project.entity;
 
 public class LameMp3 {
 

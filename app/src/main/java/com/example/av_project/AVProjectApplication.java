@@ -2,8 +2,8 @@ package com.example.av_project;
 
 import android.app.Application;
 
-import com.example.av_project.Utils.CrashHandler;
-import com.example.av_project.Utils.LogUtils;
+import com.example.av_project.utils.CrashHandler;
+import com.example.av_project.utils.LogUtils;
 
 public class AVProjectApplication extends Application {
     private static AVProjectApplication sInstance;
