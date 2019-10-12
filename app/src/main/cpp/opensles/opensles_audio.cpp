@@ -20,7 +20,7 @@ static const SLEnvironmentalReverbSettings reverbSettings =
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_av_1project_Entity_OpenSLHelper_createAudioRecorder(JNIEnv *env, jclass clazz) {
+Java_com_example_av_1project_entity_OpenSLHelper_createAudioRecorder(JNIEnv *env, jclass clazz) {
     // TODO: implement createAudioRecorder()
     return JNI_TRUE;
 
@@ -28,19 +28,19 @@ Java_com_example_av_1project_Entity_OpenSLHelper_createAudioRecorder(JNIEnv *env
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_av_1project_Entity_OpenSLHelper_startRecording(JNIEnv *env, jclass clazz) {
+Java_com_example_av_1project_entity_OpenSLHelper_startRecording(JNIEnv *env, jclass clazz) {
     // TODO: implement startRecording()
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_av_1project_Entity_OpenSLHelper_shutdown(JNIEnv *env, jclass clazz) {
+Java_com_example_av_1project_entity_OpenSLHelper_shutdown(JNIEnv *env, jclass clazz) {
     // TODO: implement shutdown()
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_av_1project_Entity_OpenSLHelper_createEngine(JNIEnv *env, jclass clazz) {
+Java_com_example_av_1project_entity_OpenSLHelper_createEngine(JNIEnv *env, jclass clazz) {
     // TODO: implement createEngine()
 
 }

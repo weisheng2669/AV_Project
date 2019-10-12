@@ -12,7 +12,9 @@ import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -31,6 +33,8 @@ import android.widget.Toast;
 import com.example.av_project.R;
 import com.example.av_project.utils.LogUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -46,7 +50,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     final int facingBack = 0, facingFront = 1;
 
     //用于展示数据
-    Surface mPreviewSurface;
+    Surface mPreviewSurface,mRecordSurface;
     SurfaceTexture mPreviewSurfaceTexture;
     //预览的Size
     Size mFrontPreviewSize, mBackPreviewSize;
@@ -65,6 +69,9 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     CaptureRequest.Builder mPreviewRequestBuilder;
     //CameraDevice
     CameraDevice device;
+
+    MediaRecorder mMediaRecorder;
+    File recordOutPutFile;
 
     //Camera打开的监听方法
     private CameraDevice.StateCallback deviceStateCallback = new CameraDevice.StateCallback() {
@@ -130,6 +137,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void initData() {
+        recordOutPutFile = new File(Environment.getExternalStorageDirectory()+"/3.mp4");
+        if(!recordOutPutFile.exists()){
+            try {
+                recordOutPutFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         handlerThread.start();
         mCameraHandler = new Handler(handlerThread.getLooper()) {
             @Override
@@ -165,22 +180,24 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
+                LogUtils.i(TAG,"onSurfaceTextureSizeChanged");
             }
 
             @Override
             public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                LogUtils.i(TAG,"onSurfaceTextureDestroyed");
                 return true;
             }
 
             @Override
             public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
+                LogUtils.i(TAG,"onSurfaceTextureUpdated");
             }
         });
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -192,6 +209,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 if (mPreviewCaptureSession != null) {
                     try {
                         mPreviewCaptureSession.stopRepeating();
+                        mPreviewCaptureSession.close();
+                        mMediaRecorder.stop();
+                        mMediaRecorder.release();
+                        mMediaRecorder =null;
+                        LogUtils.i(TAG,"录制完成");
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -200,11 +222,15 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void preViewBackCamera() {
+
         //初始化CameraManager和Camera的参数
         initCameraCharacteristics();
         //得到前后的预览Size
         initPreViewSize();
+        //设置record参数
+        setUpMediaRecorder();
         //设置预览画面的尺寸
         setSurfaceViewSize(facingBack);
         //打开Camera,并回调
@@ -212,11 +238,37 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
 
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setUpMediaRecorder() {
+        try {
+            mMediaRecorder = new MediaRecorder();
+            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+            mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            if(Build.VERSION.SDK_INT < 26){
+                //若api低于26，调用setOutputFile(String path)
+                mMediaRecorder.setOutputFile(recordOutPutFile.getAbsolutePath());
+            }else {
+                //若API高于26 使用setOutputFile(File path)
+                mMediaRecorder.setOutputFile(recordOutPutFile);
+            }
+            mMediaRecorder.setVideoEncodingBitRate(100000000);
+            mMediaRecorder.setVideoFrameRate(30);
+            mMediaRecorder.setVideoSize(mBackPreviewSize.getWidth(),mBackPreviewSize.getHeight());
+            mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+            mMediaRecorder.setOrientationHint(90);
+            mMediaRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void startPreview() {
         if(mPreviewCaptureSession!=null) {
             LogUtils.i(TAG,"开始预览");
             try {
+                mMediaRecorder.start();
                 mPreviewCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), captureCallback, mCameraHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
@@ -231,6 +283,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             mPreviewRequestBuilder = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             //设置输出Surface
             mPreviewRequestBuilder.addTarget(mPreviewSurface);
+            mPreviewRequestBuilder.addTarget(mRecordSurface);
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -242,7 +295,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         if(device!=null){
             LogUtils.i(TAG,"开始创建Session");
             try {
-                device.createCaptureSession(Arrays.asList(mPreviewSurface),captureSessionStateCallBack,mCameraHandler);
+                mRecordSurface = mMediaRecorder.getSurface();
+                device.createCaptureSession(Arrays.asList(mRecordSurface,mPreviewSurface),captureSessionStateCallBack,mCameraHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }

@@ -13,11 +13,82 @@ aux_source_directory(libmp3lame SRC_LIST)
 add_library(
         lame-mp3
         SHARED
-        lamemp3.cpp ${SRC_LIST}
-        MP3Encoder.cpp ${SRC_LIST}
+        lamemp3.cpp
+        #其中，${}的作用是引入SRC_LIST目录下的所有源文件
+        ${SRC_LIST}
+        MP3Encoder.cpp
 )
 
+add_library(
+        ffmpeg-util
+        SHARED
+        ffmpeg/ffmpeg-handler.c)
 
+set(FFMPEG_SRC ${CMAKE_SOURCE_DIR}/ffmpeg)
+
+add_library(avutil
+        SHARED
+        IMPORTED )
+set_target_properties(avutil
+        PROPERTIES IMPORTED_LOCATION
+        ${FFMPEG_SRC}/${ANDROID_ABI}/libavutil-56.so )
+
+add_library(swresample
+        SHARED
+        IMPORTED )
+set_target_properties(swresample
+        PROPERTIES IMPORTED_LOCATION
+        ${FFMPEG_SRC}/${ANDROID_ABI}/libswresample-3.so )
+
+add_library(swscale
+        SHARED
+        IMPORTED )
+set_target_properties(swscale
+        PROPERTIES IMPORTED_LOCATION
+        ${FFMPEG_SRC}/${ANDROID_ABI}/libswscale-5.so )
+
+add_library(avcodec
+        SHARED
+        IMPORTED )
+set_target_properties(avcodec
+        PROPERTIES IMPORTED_LOCATION
+        ${FFMPEG_SRC}/${ANDROID_ABI}/libavcodec-58.so )
+
+add_library(avformat
+        SHARED
+        IMPORTED )
+set_target_properties(avformat
+        PROPERTIES IMPORTED_LOCATION
+        ${FFMPEG_SRC}/${ANDROID_ABI}/libavformat-58.so )
+
+add_library(avfilter
+        SHARED
+        IMPORTED )
+set_target_properties(avfilter
+        PROPERTIES IMPORTED_LOCATION
+        ${FFMPEG_SRC}/${ANDROID_ABI}/libavfilter-7.so )
+
+add_library(avdevice
+        SHARED
+        IMPORTED )
+set_target_properties(avdevice
+        PROPERTIES IMPORTED_LOCATION
+        ${FFMPEG_SRC}/${ANDROID_ABI}/libavdevice-58.so )
+
+include_directories(${FFMPEG_SRC}/include)
+
+target_link_libraries(
+        ffmpeg-util
+        avutil
+        swresample
+        swscale
+        avcodec
+        avformat
+        avfilter
+        avdevice
+        ${log-lib}
+        ${android-lib}
+        )
 
 add_library( # Sets the name of the library.
         native-lib
