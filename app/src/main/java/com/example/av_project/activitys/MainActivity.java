@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         res.add("OpenSLES");
         res.add("AudioRecorder");
         res.add("DirectPlay");
+        res.add("Camera");
         listView.setAdapter(new MyAdapter(this,res,R.layout.activity_main_list_item_layout));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case "DirectPlay":
                         startActivity(new Intent(MainActivity.this,DirectPlayActivity.class));
+                        break;
+                    case "Camera":
+                        startActivity(new Intent(MainActivity.this,CameraActivity.class));
                         break;
                 }
             }
