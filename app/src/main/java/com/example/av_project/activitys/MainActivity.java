@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         res.add("AudioRecorder");
         res.add("DirectPlay");
         res.add("Camera");
+        res.add("FFMPEG");
         listView.setAdapter(new MyAdapter(this,res,R.layout.activity_main_list_item_layout));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -92,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case "Camera":
                         startActivity(new Intent(MainActivity.this,CameraActivity.class));
+                        break;
+                    case "FFMPEG":
+                        startActivity(new Intent(MainActivity.this,FFMpegActivity.class));
                         break;
                 }
             }

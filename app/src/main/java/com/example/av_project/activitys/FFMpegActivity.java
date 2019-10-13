@@ -68,13 +68,13 @@ public class FFMpegActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        FFmpegHandler.getInstance().init("rtmp://192.168.31.134:1935/live/room");
+        //FFmpegHandler.getInstance().init("rtmp://39.107.138.4:1935/myapp/test");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        FFmpegHandler.getInstance().close();
+//        FFmpegHandler.getInstance().close();
         super.onPause();
     }
 }

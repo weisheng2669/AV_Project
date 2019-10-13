@@ -31,49 +31,49 @@ add_library(avutil
         IMPORTED )
 set_target_properties(avutil
         PROPERTIES IMPORTED_LOCATION
-        ${FFMPEG_SRC}/${ANDROID_ABI}/libavutil-56.so )
+        ${FFMPEG_SRC}/armeabi-v7a/libavutil-56.so )
 
 add_library(swresample
         SHARED
         IMPORTED )
 set_target_properties(swresample
         PROPERTIES IMPORTED_LOCATION
-        ${FFMPEG_SRC}/${ANDROID_ABI}/libswresample-3.so )
+        ${FFMPEG_SRC}/armeabi-v7a/libswresample-3.so )
 
 add_library(swscale
         SHARED
         IMPORTED )
 set_target_properties(swscale
         PROPERTIES IMPORTED_LOCATION
-        ${FFMPEG_SRC}/${ANDROID_ABI}/libswscale-5.so )
+        ${FFMPEG_SRC}/armeabi-v7a/libswscale-5.so )
 
 add_library(avcodec
         SHARED
         IMPORTED )
 set_target_properties(avcodec
         PROPERTIES IMPORTED_LOCATION
-        ${FFMPEG_SRC}/${ANDROID_ABI}/libavcodec-58.so )
+        ${FFMPEG_SRC}/armeabi-v7a/libavcodec-58.so )
 
 add_library(avformat
         SHARED
         IMPORTED )
 set_target_properties(avformat
         PROPERTIES IMPORTED_LOCATION
-        ${FFMPEG_SRC}/${ANDROID_ABI}/libavformat-58.so )
+        ${FFMPEG_SRC}/armeabi-v7a/libavformat-58.so )
 
 add_library(avfilter
         SHARED
         IMPORTED )
 set_target_properties(avfilter
         PROPERTIES IMPORTED_LOCATION
-        ${FFMPEG_SRC}/${ANDROID_ABI}/libavfilter-7.so )
+        ${FFMPEG_SRC}/armeabi-v7a/libavfilter-7.so )
 
 add_library(avdevice
         SHARED
         IMPORTED )
 set_target_properties(avdevice
         PROPERTIES IMPORTED_LOCATION
-        ${FFMPEG_SRC}/${ANDROID_ABI}/libavdevice-58.so )
+        ${FFMPEG_SRC}/armeabi-v7a/libavdevice-58.so )
 
 include_directories(${FFMPEG_SRC}/include)
 

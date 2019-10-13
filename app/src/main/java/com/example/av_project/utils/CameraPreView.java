@@ -206,7 +206,7 @@ public class CameraPreView {
                     }
                 }
             }
-            FFmpegHandler.getInstance().pushCameraData(yBytes, yBytes.length, uBytes, uBytes.length, vBytes, vBytes.length);
+           // FFmpegHandler.getInstance().pushCameraData(yBytes, yBytes.length, uBytes, uBytes.length, vBytes, vBytes.length);
             image.close();
         }
 
@@ -271,6 +271,8 @@ public class CameraPreView {
     public CameraPreView(Context context, TextureView mPreViewTexture, ImageReader imageReader, CAMERA_FACING facing){
         this.context = context;
         this.mPreViewTexture = mPreViewTexture;
+        this.mPerViewSurfaceTexture = mPreViewTexture.getSurfaceTexture();
+        surfaceList.add(new Surface(mPerViewSurfaceTexture));
         this.mImageReader = imageReader;
         this.facing = facing;
         init(OP_NAME.PUSHER_STREAM);
@@ -290,7 +292,6 @@ public class CameraPreView {
         mPreViewTexture.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-                surfaceList.add(new Surface(surface));
             }
 
             @Override
@@ -315,8 +316,8 @@ public class CameraPreView {
                 break;
             case PUSHER_STREAM:
                 op_name = OP_NAME.PUSHER_STREAM;
-                surfaceList.add(mImageReader.getSurface());
-                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mCameraHandler);
+//                surfaceList.add(mImageReader.getSurface());
+//                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mCameraHandler);
                 break;
         }
 
@@ -375,6 +376,7 @@ public class CameraPreView {
             mPreviewRequestBuilder = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             //设置输出Surface
             for(Surface target:surfaceList) {
+                LogUtils.i(TAG,target.toString());
                 mPreviewRequestBuilder.addTarget(target);
             }
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);

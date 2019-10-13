@@ -15,6 +15,15 @@ android {
                 cFlags "-DSTDC_HEADERS"
             }
         }
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+        sourceSets {
+            main {
+                jniLibs.srcDirs = ['src/main/cpp/ffmpeg/armeabi-v7a']
+            }
+        }
+
     }
     buildTypes {
         release {
