@@ -9,7 +9,7 @@ MP3Encoder *encoder;
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_av_1project_Entity_LameMp3_init(JNIEnv *env, jobject thiz, jstring pcmPathParam,
+Java_com_example_av_1project_entity_LameMp3_init(JNIEnv *env, jobject thiz, jstring pcmPathParam,
                                           jint audio_channels, jint bit_rate, jint sample_rate,
                                           jstring mp3PathParam) {
     // TODO: implement init()
@@ -25,21 +25,21 @@ Java_com_example_av_1project_Entity_LameMp3_init(JNIEnv *env, jobject thiz, jstr
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_av_1project_Entity_LameMp3_encode(JNIEnv *env, jobject thiz) {
+Java_com_example_av_1project_entity_LameMp3_encode(JNIEnv *env, jobject thiz) {
     // TODO: implement encode()
     encoder->Encode();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_av_1project_Entity_LameMp3_destroy(JNIEnv *env, jobject thiz) {
+Java_com_example_av_1project_entity_LameMp3_destroy(JNIEnv *env, jobject thiz) {
     // TODO: implement destroy()
     encoder->Destory();
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_example_av_1project_Entity_LameMp3_getVersion(JNIEnv *env, jobject thiz) {
+Java_com_example_av_1project_entity_LameMp3_getVersion(JNIEnv *env, jobject thiz) {
     // TODO: implement getVersion()
     return env->NewStringUTF(get_lame_version());
 }
