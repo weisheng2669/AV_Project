@@ -39,7 +39,8 @@ public class FFMpegActivity extends AppCompatActivity {
         btn_start_pusher= findViewById(R.id.btn_start_pusher);
         btn_stop_pusher = findViewById(R.id.btn_stop_pusher);
         preViewTexture = findViewById(R.id.preview_container);
-        mImageReader = ImageReader.newInstance(400,400, ImageFormat.YUV_420_888,1);
+        mImageReader = ImageReader.newInstance(640, 480,
+                ImageFormat.YUV_420_888, 1);
         btn_start_pusher.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -68,13 +69,13 @@ public class FFMpegActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //FFmpegHandler.getInstance().init("rtmp://39.107.138.4:1935/myapp/test");
+        FFmpegHandler.getInstance().init("rtmp://39.107.138.4:1935/myapp/test");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        FFmpegHandler.getInstance().close();
+        FFmpegHandler.getInstance().close();
         super.onPause();
     }
 }

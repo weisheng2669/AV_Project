@@ -20,10 +20,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.av_project.R;
+import com.example.av_project.utils.LogUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 //    Button btn_encoder;
 //    LameMp3 lameMp3;
 //    int sampleRate = 44100;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initPermission();
+        LogUtils.i(TAG, Build.CPU_ABI);
 
         /*lameMp3 = new LameMp3();
         System.out.println(lameMp3.getVersion());

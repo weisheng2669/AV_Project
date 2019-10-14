@@ -132,6 +132,7 @@ public class CameraPreView {
 
         @Override
         public void onImageAvailable(ImageReader reader) {
+            LogUtils.i(TAG,"开始输出内容");
 
 //            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
             Image image = reader.acquireLatestImage();
@@ -206,7 +207,7 @@ public class CameraPreView {
                     }
                 }
             }
-           // FFmpegHandler.getInstance().pushCameraData(yBytes, yBytes.length, uBytes, uBytes.length, vBytes, vBytes.length);
+            FFmpegHandler.getInstance().pushCameraData(yBytes, yBytes.length, uBytes, uBytes.length, vBytes, vBytes.length);
             image.close();
         }
 
@@ -273,6 +274,7 @@ public class CameraPreView {
         this.mPreViewTexture = mPreViewTexture;
         this.mPerViewSurfaceTexture = mPreViewTexture.getSurfaceTexture();
         surfaceList.add(new Surface(mPerViewSurfaceTexture));
+        surfaceList.add(imageReader.getSurface());
         this.mImageReader = imageReader;
         this.facing = facing;
         init(OP_NAME.PUSHER_STREAM);
@@ -312,12 +314,10 @@ public class CameraPreView {
         switch (op){
             case RECORDER:
                 op_name = OP_NAME.RECORDER;
-                surfaceList.add(mediaRecorder.getSurface());
                 break;
             case PUSHER_STREAM:
                 op_name = OP_NAME.PUSHER_STREAM;
-//                surfaceList.add(mImageReader.getSurface());
-//                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mCameraHandler);
+                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mCameraHandler);
                 break;
         }
 

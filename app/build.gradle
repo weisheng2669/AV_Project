@@ -5,22 +5,22 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.example.av_project"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
             cmake {
-                cppFlags "-frtti -fexceptions"
-                cFlags "-DSTDC_HEADERS"
+                cppFlags ""
             }
         }
         ndk {
-            abiFilters 'armeabi-v7a'
+            abiFilters "armeabi-v7a"
         }
-        sourceSets {
-            main {
-                jniLibs.srcDirs = ['src/main/cpp/ffmpeg/armeabi-v7a']
+
+        sourceSets{
+            main{
+                jniLibs.srcDirs = ['src/main/cpp/ffmpeg']
             }
         }
 
@@ -34,7 +34,6 @@ android {
     externalNativeBuild {
         cmake {
             path 'src/main/cpp/CMakeLists.txt'
-            version '3.6.0'
         }
     }
 }

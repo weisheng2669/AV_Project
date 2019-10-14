@@ -3,7 +3,7 @@
 
 #define LOG_TAG    "ffmpeg-c"
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-//#define printf(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGD(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 
 #include <libavcodec/avcodec.h>
@@ -48,7 +48,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_init(JNIEnv *jniEnv, jobject i
     //output initialize
     int ret = avformat_alloc_output_context2(&ofmt_ctx, NULL, "flv", out_url);
     if (ret < 0) {
-        printf("avformat_alloc_output_context2 error");
+        LOGE("avformat_alloc_output_context2 error");
     }
 
 
@@ -56,7 +56,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_init(JNIEnv *jniEnv, jobject i
     pCodec = avcodec_find_encoder(AV_CODEC_ID_H264);
 
     if (!pCodec) {
-        printf("Can not find encoder!\n");
+        LOGE("Can not find encoder!\n");
         return -1;
     }
 
@@ -101,7 +101,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_init(JNIEnv *jniEnv, jobject i
     }
 
     if (avcodec_open2(pCodecCtx, pCodec, &param) < 0) {
-        printf("Failed to open encoder!\n");
+        LOGE("Failed to open encoder!\n");
         return -1;
     }
 
@@ -116,15 +116,15 @@ Java_com_example_av_1project_entity_FFmpegHandler_init(JNIEnv *jniEnv, jobject i
 
     int err = avio_open(&ofmt_ctx->pb, out_url, AVIO_FLAG_READ_WRITE);
     if (err < 0) {
-        printf("Failed to open output：%s", av_err2str(err));
+        LOGE("Failed to open output：%s", av_err2str(err));
         return -1;
     }
 
     //Write File Header
-    ret = avformat_write_header(ofmt_ctx, NULL);
+    avformat_write_header(ofmt_ctx, NULL);
     av_init_packet(&enc_pkt);
 
-    return ret;
+    return 0;
 }
 
 JNIEXPORT jint JNICALL
@@ -164,7 +164,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_pushCameraData(JNIEnv *jniEnv,
     //开始编码YUV数据
     ret = avcodec_send_frame(pCodecCtx, pFrameYUV);
     if (ret != 0) {
-        printf("avcodec_send_frame error");
+        LOGE("avcodec_send_frame error");
         return -1;
     }
     //获取编码后的数据
@@ -172,7 +172,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_pushCameraData(JNIEnv *jniEnv,
 
     av_frame_free(&pFrameYUV);
     if (ret != 0 || enc_pkt.size <= 0) {
-        printf("avcodec_receive_packet error %s", av_err2str(ret));
+        LOGE("avcodec_receive_packet error %s", av_err2str(ret));
         return -2;
     }
     enc_pkt.stream_index = video_st->index;
@@ -184,7 +184,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_pushCameraData(JNIEnv *jniEnv,
 
     ret = av_interleaved_write_frame(ofmt_ctx, &enc_pkt);
     if (ret != 0) {
-        printf("av_interleaved_write_frame failed");
+        LOGE("av_interleaved_write_frame failed");
     }
     count++;
     av_packet_unref(&enc_pkt);
