@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         res.add("DirectPlay");
         res.add("Camera");
         res.add("FFMPEG");
+        res.add("PULLRTMP");
+        res.add("PLAYVIDEO");
         listView.setAdapter(new MyAdapter(this,res,R.layout.activity_main_list_item_layout));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -100,6 +102,12 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case "FFMPEG":
                         startActivity(new Intent(MainActivity.this,FFMpegActivity.class));
+                        break;
+                    case "PULLRTMP":
+                        startActivity(new Intent(MainActivity.this,PullFFMPEGActivity.class));
+                        break;
+                    case "PLAYVIDEO":
+                        startActivity(new Intent(MainActivity.this,DecodeYUVActivity.class));
                         break;
                 }
             }

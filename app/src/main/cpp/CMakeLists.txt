@@ -7,6 +7,11 @@ add_library(
         SHARED
         ${CMAKE_SOURCE_DIR}/../jni/ffmpeg-handler.c)
 
+add_library(
+        decode-video
+        SHARED
+        ${CMAKE_SOURCE_DIR}/../jni/decode_video.cpp)
+
 find_library( # Sets the name of the path variable.
         log-lib
         log)
@@ -61,6 +66,12 @@ set_target_properties(avdevice
 
 include_directories(${CMAKE_SOURCE_DIR}/ffmpeg/include)
 
+target_link_libraries(decode-video
+        android
+        avutil swresample swscale avcodec avformat avfilter avdevice
+        ${log-lib} ${android-lib})
+
 target_link_libraries(ffmpeg-handler
+        android
         avutil swresample swscale avcodec avformat avfilter avdevice
         ${log-lib} ${android-lib} )

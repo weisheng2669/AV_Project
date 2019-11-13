@@ -18,9 +18,14 @@ android {
             abiFilters "armeabi-v7a"
         }
 
-        sourceSets{
-            main{
+        sourceSets {
+            main {
                 jniLibs.srcDirs = ['src/main/cpp/ffmpeg']
+            }
+        }
+        buildTypes{
+            debug {
+                jniDebuggable true
             }
         }
 
@@ -29,6 +34,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            jniDebuggable true
         }
     }
     externalNativeBuild {

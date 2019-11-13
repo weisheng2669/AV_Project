@@ -1,6 +1,7 @@
 #include <jni.h>
 #include<android/log.h>
-
+#include <android/native_window_jni.h>
+#include <android/native_window.h>
 #define LOG_TAG    "ffmpeg-c"
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -77,15 +78,15 @@ Java_com_example_av_1project_entity_FFmpegHandler_init(JNIEnv *jniEnv, jobject i
     pCodecCtx->time_base = (AVRational) {1, 15};
     //目标的码率，即采样的码率；显然，采样码率越大，视频大小越大
     pCodecCtx->bit_rate = 400000;
-    pCodecCtx->gop_size = 50;
+    pCodecCtx->gop_size = 20;
     /* Some formats want stream headers to be separate. */
     if (ofmt_ctx->oformat->flags & AVFMT_GLOBALHEADER)
         pCodecCtx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
     //H264 codec param
 //    pCodecCtx->me_range = 16;
-    //pCodecCtx->max_qdiff = 4;
-    pCodecCtx->qcompress = 0.6;
+//    pCodecCtx->max_qdiff = 4;
+//    pCodecCtx->qcompress = 0.6;
     //最大和最小量化系数
     pCodecCtx->qmin = 10;
     pCodecCtx->qmax = 51;
@@ -96,7 +97,8 @@ Java_com_example_av_1project_entity_FFmpegHandler_init(JNIEnv *jniEnv, jobject i
     AVDictionary *param = 0;
     //H.264
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264) {
-        av_dict_set(&param, "preset", "superfast", 0); //x264编码速度的选项
+//        av_dict_set(&param,"start_time_realtime",0,0);
+        av_dict_set(&param, "preset", "ultrafast", 0); //x264编码速度的选项
         av_dict_set(&param, "tune", "zerolatency", 0);
     }
 
@@ -130,6 +132,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_init(JNIEnv *jniEnv, jobject i
 JNIEXPORT jint JNICALL
 Java_com_example_av_1project_entity_FFmpegHandler_pushCameraData(JNIEnv *jniEnv, jobject instance, jbyteArray yArray, jint yLen, jbyteArray uArray, jint uLen,
                                                                  jbyteArray vArray, jint vLen) {
+   long startTime = av_gettime();
     // TODO: implement pushCameraData()
     jbyte *yin = (*jniEnv)->GetByteArrayElements(jniEnv, yArray, NULL);
     jbyte *uin = (*jniEnv)->GetByteArrayElements(jniEnv, uArray, NULL);
@@ -138,6 +141,7 @@ Java_com_example_av_1project_entity_FFmpegHandler_pushCameraData(JNIEnv *jniEnv,
     int ret = 0;
 
     pFrameYUV = av_frame_alloc();
+
     int picture_size = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width,
                                                 pCodecCtx->height, 1);
     uint8_t *buffers = (uint8_t *) av_malloc(picture_size);
@@ -159,8 +163,8 @@ Java_com_example_av_1project_entity_FFmpegHandler_pushCameraData(JNIEnv *jniEnv,
     //初始化AVPacket
     enc_pkt.data = NULL;
     enc_pkt.size = 0;
-//    __android_log_print(ANDROID_LOG_WARN, "eric", "编码前时间:%lld",
-//                        (long long) ((av_gettime() - startTime) / 1000));
+    __android_log_print(ANDROID_LOG_WARN, "eric", "编码前时间:%lld",
+                        (long long) ((av_gettime() - startTime) / 1000));
     //开始编码YUV数据
     ret = avcodec_send_frame(pCodecCtx, pFrameYUV);
     if (ret != 0) {
@@ -213,3 +217,12 @@ Java_com_example_av_1project_entity_FFmpegHandler_close(JNIEnv *env, jobject thi
     }
     return 0;
 }
+
+JNIEXPORT jint JNICALL Java_com_example_av_1project_entity_FFmpegHandler_pullRTMPSoruce(JNIEnv * env,  jobject thiz,
+        jcharArray url, jobject surface){
+    LOGD("start playvideo... url");
+    // 视频url，这里有点小问题，外部传入的url，在这里转char *,有些问题，用了网上方法，jstring转char *也不靠谱，先mark下。
+
+}
+
+

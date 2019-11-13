@@ -1,6 +1,9 @@
 package com.example.av_project.entity;
 
 
+import android.view.Surface;
+import android.view.TextureView;
+
 /**
  * @Author: liuwei
  * @Create: 2018/12/21 9:35
@@ -36,4 +39,6 @@ public class FFmpegHandler {
     public native int pushCameraData(byte[] buffer,int ylen,byte[] ubuffer,int ulen,byte[] vbuffer,int vlen);
 
     public native int close();
+
+    public native int pullRTMPSoruce(char[] url, TextureView surface);
 }
