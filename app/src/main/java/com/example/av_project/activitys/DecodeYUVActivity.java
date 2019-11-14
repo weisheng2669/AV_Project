@@ -3,7 +3,6 @@ package com.example.av_project.activitys;
 import android.graphics.ImageFormat;
 import android.media.ImageReader;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import android.widget.Button;
 
 import com.example.av_project.R;
 import com.example.av_project.entity.FFmpegHandler;
-import com.example.av_project.utils.CameraPreView;
+import com.example.av_project.utils.camera_relation.CameraPreView;
 
 public class DecodeYUVActivity extends AppCompatActivity {
     private static final String PULL_URL_XINSHEN = "rtmp://123.183.160.249:11935/app/test";
@@ -32,7 +31,7 @@ public class DecodeYUVActivity extends AppCompatActivity {
     SurfaceView surfaceView;
     Surface surface;
     SurfaceHolder surfaceViewHolder;
-    Button btn_push_video_aliyun, btn_push_video_xinshen,btn_pull_video_aliyun,btn_pull_video_xinshen;
+    Button btn_push_video_aliyun, btn_push_video_xinshen,btn_pull_video_aliyun,btn_pull_video_xinshen,btn_switch_camera;
 
     //用于预览的TextureView
     TextureView preViewTexture;
@@ -54,7 +53,10 @@ public class DecodeYUVActivity extends AppCompatActivity {
         btn_pull_video_xinshen = findViewById(R.id.start_play_xinshen);
         btn_push_video_aliyun = findViewById(R.id.start_push);
         btn_push_video_xinshen  = findViewById(R.id.start_push_xinshen);
+        btn_switch_camera = findViewById(R.id.btn_switch_camera);
         preViewTexture = findViewById(R.id.preview_container);
+
+
 
         surfaceViewHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -75,6 +77,7 @@ public class DecodeYUVActivity extends AppCompatActivity {
             public void onClick(View v) {
                 FFmpegHandler.getInstance().init(PUSH_URL_ALIYUN);
                 startCameraWork();
+                cameraPreView.pushToServer(PUSH_URL_ALIYUN);
             }
         });
 
@@ -83,6 +86,7 @@ public class DecodeYUVActivity extends AppCompatActivity {
             public void onClick(View v) {
                 FFmpegHandler.getInstance().init(PUSH_URL_XINSHEN);
                 startCameraWork();
+                cameraPreView.pushToServer(PUSH_URL_ALIYUN);
             }
         });
         btn_pull_video_aliyun.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +104,12 @@ public class DecodeYUVActivity extends AppCompatActivity {
                 init();
                 startDecode(PULL_URL_XINSHEN, surface);
                 destroy();
+            }
+        });
+        btn_switch_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cameraPreView.switchCamera();
             }
         });
     }

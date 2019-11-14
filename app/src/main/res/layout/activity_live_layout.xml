@@ -26,6 +26,11 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/btn_switch_camera"
+            android:text="切换摄像头"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/start_push_xinshen"
             android:text="开始推流--xinshen"/>
 
@@ -61,5 +66,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
+
 
 </LinearLayout>
