@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         res.add("FFMPEG");
         res.add("PULLRTMP");
         res.add("PLAYVIDEO");
+        res.add("MusicBounce");
         listView.setAdapter(new MyAdapter(this,res,R.layout.activity_main_list_item_layout));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -108,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case "PLAYVIDEO":
                         startActivity(new Intent(MainActivity.this,DecodeYUVActivity.class));
+                        break;
+                    case "MusicBounce":
+                        startActivity(new Intent(MainActivity.this,MusicBounceActivity.class));
                         break;
                 }
             }

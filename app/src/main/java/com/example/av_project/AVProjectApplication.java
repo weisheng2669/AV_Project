@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.example.av_project.utils.CrashHandler;
 import com.example.av_project.utils.LogUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 public class AVProjectApplication extends Application {
     private static AVProjectApplication sInstance;
@@ -12,9 +13,8 @@ public class AVProjectApplication extends Application {
         super.onCreate();
         sInstance = this;
 
-        CrashHandler crashHandler = CrashHandler.getInstance();
-        crashHandler.init(this);
 
+        CrashReport.initCrashReport(getApplicationContext(), "91c5f8c4ee", false);
         LogUtils.getInstance();
     }
 }

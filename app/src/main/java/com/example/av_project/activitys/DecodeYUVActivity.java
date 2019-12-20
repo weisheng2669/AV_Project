@@ -129,7 +129,7 @@ public class DecodeYUVActivity extends AppCompatActivity {
     private void startCameraWork() {
         builder = new CameraPreView.Builder(this,preViewTexture,mImageReader, CameraPreView.CAMERA_FACING.FACING_BACK);
         cameraPreView = builder.build();
-        //开启
+        //开
         cameraPreView.start();
     }
 
