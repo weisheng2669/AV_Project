@@ -3,6 +3,8 @@ package com.example.av_project.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Message;
@@ -44,7 +46,8 @@ public class MusicView extends View {
     @SuppressLint("ResourceAsColor")
     private void initData() {
         paint = new Paint();
-        paint.setColor(R.color.colorAccent);
+
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
 
@@ -54,14 +57,17 @@ public class MusicView extends View {
         super.onDraw(canvas);
         width = getMeasuredWidth();
         height = getMeasuredHeight();
-
+        paint.setColor(Color.rgb(123,76,129));
         for(int i=0;i<10;i++){
             double nowHeight = Math.random()*height;
             canvas.drawRect(i*width/10, (float) nowHeight,(i+1)*width/10,height,paint);
         }
+
         postInvalidateDelayed(300);
     }
 
-
-
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+    }
 }
