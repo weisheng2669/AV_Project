@@ -38,6 +38,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     public void uncaughtException(Thread t, Throwable e) {
         try {
             Thread.sleep(3000);
+            e.printStackTrace();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
