@@ -1,4 +1,4 @@
-package com.example.av_project.utils;
+package com.example.av_project.utils.camera_relation;
 
 import android.Manifest;
 import android.content.Context;
@@ -26,16 +26,15 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
-import android.widget.Button;
 import android.widget.Toast;
-
 import com.example.av_project.entity.FFmpegHandler;
-
+import com.example.av_project.utils.ConfigurationUtils;
+import com.example.av_project.utils.LogUtils;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.content.Context.CAMERA_SERVICE;
+
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraPreView {
@@ -44,13 +43,17 @@ public class CameraPreView {
     private static volatile HandlerThread cameraHandlerThread = null;
     private static Handler mCameraHandler;
     private Context context;
-    private TextureView mPreViewTexture;
+    private TextureView mPreViewTextureView;
     private ImageReader mImageReader;
     private MediaRecorder mediaRecorder;
 
+    //获取到设备的回调
     private static final int MESSAGE_GET_DEVICE = 0;
+    //创建会话成功的回调
     private static final int MESSAGE_GET_SESSION = 1;
 
+    private ConfigurationUtils.Camera_State mState = ConfigurationUtils.Camera_State.STATE_CLOSE;
+    //输出图像的Surface合集
     List<Surface> surfaceList = new ArrayList<>();
 
     //预览的Size
@@ -70,10 +73,107 @@ public class CameraPreView {
     CaptureRequest.Builder mPreviewRequestBuilder;
     //CameraDevice
     CameraDevice device;
-
+    //摄像机的朝向
     CAMERA_FACING facing;
-
+    //操作
     OP_NAME op_name;
+    //朝向
+    int facing_flag = 0;
+    //Camera Object
+    Object cameraobj = new Object();
+
+    //构造器
+    public final static class Builder{
+
+        private final CameraPreView mCameraPreView;
+
+        //记录数据
+        public Builder(Context context, TextureView mPreViewTextrueView, ImageReader imageReader,CAMERA_FACING facing){
+            mCameraPreView = new CameraPreView(context,mPreViewTextrueView,imageReader,facing);
+        }
+        //直播数据
+        public Builder(Context context, TextureView mPreViewTextrueView, MediaRecorder mediaRecorder,CAMERA_FACING facing){
+            mCameraPreView = new CameraPreView(context,mPreViewTextrueView,mediaRecorder,facing);
+        }
+
+        public Builder init(){
+            return this;
+        }
+
+        public CameraPreView build(){
+            return mCameraPreView;
+        }
+
+    }
+    public CameraPreView(Context context, TextureView mPreViewTexture, ImageReader imageReader, CAMERA_FACING facing){
+        this.context = context;
+        this.mPreViewTextureView = mPreViewTexture;
+        this.mPerViewSurfaceTexture = mPreViewTexture.getSurfaceTexture();
+        surfaceList.add(new Surface(mPerViewSurfaceTexture));
+        surfaceList.add(imageReader.getSurface());
+        this.mImageReader = imageReader;
+        this.facing = facing;
+        if(facing == CAMERA_FACING.FACING_BACK){
+            facing_flag = 0;
+        }else{
+            facing_flag = 1;
+        }
+
+    }
+
+
+
+    public CameraPreView(Context context, TextureView mPreViewTextureView, MediaRecorder mediaRecorder, CAMERA_FACING facing){
+        this.context = context;
+        this.mPreViewTextureView = mPreViewTextureView;
+        this.mediaRecorder = mediaRecorder;
+        this.facing = facing;
+        if(facing == CAMERA_FACING.FACING_BACK){
+            facing_flag = 0;
+        }else{
+            facing_flag = 1;
+        }
+    }
+
+    /**
+     * switchCamera 转换摄像头
+     */
+
+    public void switchCamera(){
+       if(facing_flag == 0){
+           facing_flag = 1;
+           this.facing = CAMERA_FACING.FACING_FRONT;
+           closeCamera();
+           openCameraWithConfig(backCameraId);
+       }else{
+           facing_flag = 0;
+           this.facing = CAMERA_FACING.FACING_BACK;
+           closeCamera();
+           openCameraWithConfig(frontCameraId);
+       }
+
+    }
+
+    /**
+     * closeCamera 关闭摄像头
+     */
+
+    private void closeCamera(){
+        synchronized (cameraobj){
+
+
+            if(null!=mPreviewCaptureSession){
+                mPreviewCaptureSession.close();
+                mPreviewCaptureSession = null;
+            }
+
+            if(null != device){
+                device.close();
+                device = null;
+            }
+
+        }
+    }
 
     //开始Request的监听方法
     private CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
@@ -250,48 +350,12 @@ public class CameraPreView {
         }
     }
 
-    public final static class Builder{
 
-        private final CameraPreView mCameraPreView;
-        //记录数据
-        public Builder(Context context, TextureView mPreViewTextrueView, ImageReader imageReader,CAMERA_FACING facing){
-            mCameraPreView = new CameraPreView(context,mPreViewTextrueView,imageReader,facing);
-        }
-        public Builder(Context context, TextureView mPreViewTextrueView, MediaRecorder mediaRecorder,CAMERA_FACING facing){
-            mCameraPreView = new CameraPreView(context,mPreViewTextrueView,mediaRecorder,facing);
-        }
-        public Builder init(){
-            return this;
-        }
 
-        public CameraPreView build(){
-            return mCameraPreView;
-        }
-
-    }
-    public CameraPreView(Context context, TextureView mPreViewTexture, ImageReader imageReader, CAMERA_FACING facing){
-        this.context = context;
-        this.mPreViewTexture = mPreViewTexture;
-        this.mPerViewSurfaceTexture = mPreViewTexture.getSurfaceTexture();
-        surfaceList.add(new Surface(mPerViewSurfaceTexture));
-        surfaceList.add(imageReader.getSurface());
-        this.mImageReader = imageReader;
-        this.facing = facing;
-        init(OP_NAME.PUSHER_STREAM);
-    }
-
-    public CameraPreView(Context context, TextureView mPerViewTexture, MediaRecorder mediaRecorder, CAMERA_FACING facing){
-        this.context = context;
-        this.mPreViewTexture = mPerViewTexture;
-        this.mediaRecorder = mediaRecorder;
-        this.facing = facing;
-        init(OP_NAME.RECORDER);
-    }
-
-    private void init(OP_NAME op) {
+    private void initParams() {
         setHandlerThread();
         setHandler();
-        mPreViewTexture.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+        mPreViewTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             }
@@ -311,17 +375,9 @@ public class CameraPreView {
 
             }
         });
-        switch (op){
-            case RECORDER:
-                op_name = OP_NAME.RECORDER;
-                break;
-            case PUSHER_STREAM:
-                op_name = OP_NAME.PUSHER_STREAM;
-                mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mCameraHandler);
-                break;
-        }
-
     }
+
+
 
     private void setHandler() {
         if(mCameraHandler == null) {
@@ -346,11 +402,7 @@ public class CameraPreView {
         if(mPreviewCaptureSession!=null) {
             LogUtils.i(TAG,"开始预览");
             try {
-                if(op_name.equals(OP_NAME.RECORDER)){
-                    mediaRecorder.start();
-                }else if(op_name.equals(OP_NAME.PUSHER_STREAM)){
-//                    mImageReader
-                }
+
                 mPreviewCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), captureCallback, mCameraHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
@@ -361,12 +413,18 @@ public class CameraPreView {
     public void start(){
         //初始化CameraManager和Camera的参数
         initCameraCharacteristics();
+        mState = ConfigurationUtils.Camera_State.STATE_STAND_BY;
         //得到前后的预览Size
         initPreViewSize();
         //设置预览画面的尺寸
         setSurfaceViewSize(facing);
         //打开Camera,并回调
-        openCameraWithConfig();
+        if(facing_flag == 0){
+            openCameraWithConfig(backCameraId);
+        }else{
+            openCameraWithConfig(frontCameraId);
+        }
+        initParams();
     }
 
     private void createCameraRequest() {
@@ -386,24 +444,36 @@ public class CameraPreView {
 
     }
 
-    private void openCameraWithConfig() {
-        LogUtils.i(TAG,"打开照相机");
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+    private void openCameraWithConfig(String cameraId) {
+        synchronized (cameraobj) {
+
+            LogUtils.i(TAG, "打开照相机");
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            //摄像机ID,监听回调方法,处理的Handler
+            try {
+                manager.openCamera(cameraId, deviceStateCallback, mCameraHandler);
+                mState = ConfigurationUtils.Camera_State.STATE_OPEN;
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
         }
-        //摄像机ID,监听回调方法,处理的Handler
-        try {
-            manager.openCamera(backCameraId, deviceStateCallback, mCameraHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+    }
+
+    public ConfigurationUtils.Camera_State getmState() {
+        return mState;
+    }
+
+    public void setmState(ConfigurationUtils.Camera_State mState) {
+        this.mState = mState;
     }
 
     private void setSurfaceViewSize(CAMERA_FACING facing) {
@@ -509,5 +579,8 @@ public class CameraPreView {
         }else{
             Toast.makeText(context, "设备未获取到", Toast.LENGTH_SHORT).show();
         }
+    }
+    public void pushToServer(String url){
+        mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mCameraHandler);
     }
 }

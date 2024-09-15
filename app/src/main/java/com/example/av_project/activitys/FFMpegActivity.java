@@ -1,23 +1,18 @@
 package com.example.av_project.activitys;
 
 import android.graphics.ImageFormat;
-import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraManager;
 import android.media.ImageReader;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.av_project.R;
 import com.example.av_project.entity.FFmpegHandler;
-import com.example.av_project.utils.CameraPreView;
+import com.example.av_project.utils.camera_relation.CameraPreView;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FFMpegActivity extends AppCompatActivity {

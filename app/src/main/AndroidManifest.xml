@@ -4,13 +4,13 @@
     package="com.example.av_project">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- MODIFY_AUDIO_SETTINGS is needed to use audio effects such as environmental reverb -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -22,9 +22,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
-        <activity android:name=".activitys.FFMpegActivity"></activity>
+        <activity android:name=".activitys.MusicBounceActivity"></activity>
+        <activity android:name=".activitys.PullFFMPEGActivity" />
+        <activity android:name=".activitys.FFMpegActivity" />
         <activity android:name=".activitys.CameraActivity" />
         <activity android:name=".activitys.DirectPlayActivity" />
+        <activity android:name=".activitys.DecodeYUVActivity" />
         <activity android:name=".activitys.AudioRecorderActivity" />
         <activity android:name=".activitys.OpenSLESActivity" />
         <activity android:name=".activitys.AudioTrackActivity" />
